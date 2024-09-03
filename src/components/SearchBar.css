@@ -1,0 +1,24 @@
+.form-header {
+    padding: 20px 0;
+}
+
+.searchbar-form {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.searchbar-input {
+    max-height: 88px;
+    border-radius: 10px;
+    border: solid 3px #fff;
+    box-sizing: border-box;
+    border: 3px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+
+.searchbar-input:focus {
+    border: solid 3px #646cff;
+}
