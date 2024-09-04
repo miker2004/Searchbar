@@ -1,8 +1,7 @@
-const ImageCard = ({ article }) => {
+const ImageCard = ({ article, onClick }) => {
   return (
-    <div className="image-card">
-      <img src={article.urls.small} alt={article.description || 'Unsplash Image'} />
-      <p>{article.user.name}</p>
+    <div className="image-card" onClick={onClick}>
+      <img className="imgs-gallery" src={article.urls.small} alt={article.description || 'Unsplash Image'} />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import axios from 'axios';
 import Loader from './components/Loader';
 import ErrorMessage from './components/ErrorMessage';
 import LoadMoreBtn from './components/LoadMoreBtn';
+import ImageModal from './components/ImageModal';
 
 const ACCESS_KEY = 'RFQ_SqOLGRkL-6vTpJDhmFhaUpiWfOof6J4XnRBaTgc';
 
@@ -13,11 +14,13 @@ function App() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-
-  const fetchArticlesWithTopic = async (topic) => {
+  const [page, setPage] = useState(1);
+  const [topic, setTopic] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null); 
+  const fetchArticlesWithTopic = async (topic, page) => {
     try {
       const response = await axios.get(`https://api.unsplash.com/search/photos`, {
-        params: { query: topic, per_page: 10 },
+        params: { query: topic, per_page: 10, page: page },
         headers: {
           Authorization: `Client-ID ${ACCESS_KEY}`, 
         },
@@ -33,8 +36,10 @@ function App() {
   const handleSearch = async (topic) => {
     setLoading(true);
     setError(false);
+    setTopic(topic); 
+    setPage(1); 
     try {
-      const data = await fetchArticlesWithTopic(topic);
+      const data = await fetchArticlesWithTopic(topic, 1);
       setArticles(data);
     } catch (error) {
       setError(true);
@@ -43,13 +48,37 @@ function App() {
     }
   };
 
+  const handleLoadMore = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const newPage = page + 1;
+      const data = await fetchArticlesWithTopic(topic, newPage);
+      setArticles((prevArticles) => [...prevArticles, ...data]);
+      setPage(newPage);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openModal = (image) => {
+    setSelectedImage(image); 
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null); 
+  };
+
   return (
     <>
       <SearchBar onSearch={handleSearch} />
-      {loading && <Loader /> }
+      {loading && <Loader />}
       {error && <ErrorMessage />}
-      <ImageGallery articles={articles} />
-      <LoadMoreBtn />
+      <ImageGallery articles={articles} onImageClick={openModal} />
+      {articles.length > 0 && !loading && <LoadMoreBtn onClick={handleLoadMore} />}
+      {selectedImage && <ImageModal image={selectedImage} onRequestClose={closeModal} />}
     </>
   );
 }
